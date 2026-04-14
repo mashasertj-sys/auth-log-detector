@@ -28,10 +28,10 @@ jobs:
           bandit -r . -f json -o bandit-report.json || true
           bandit -r . --severity-level medium
 
-      - name: Run Safety (SCA)
+      - name: Run pip-audit (SCA)
         run: |
-          pip install safety==2.3.5
-          safety check -r requirements.txt --json > safety-report.json || true
+          pip install pip-audit
+          pip-audit -r requirements.txt || true
 
       - name: Run Gitleaks (Secrets)
         run: |
