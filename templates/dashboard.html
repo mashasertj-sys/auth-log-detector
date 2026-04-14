@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель мониторинга SOC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #1e40af;
+            --primary-dark: #1e3a8a;
+            --secondary: #0f172a;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --critical: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+            color: var(--gray-800);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--gray-800) 100%);
+            color: white;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .brand-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-text p {
+            font-size: 0.75rem;
+            color: var(--gray-300);
+            font-weight: 400;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: var(--success);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border: 2px solid var(--gray-200);
+        }
+
+        .user-details { line-height: 1.25; }
+        .user-name { font-weight: 600; font-size: 0.875rem; }
+        .user-role { font-size: 0.75rem; color: var(--gray-300); }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .stat-card.total { border-left-color: var(--primary); }
+        .stat-card.new { border-left-color: var(--success); }
+        .stat-card.runs { border-left-color: var(--warning); }
+        .stat-card.unique { border-left-color: var(--danger); }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-card.total .stat-icon { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
+        .stat-card.new .stat-icon { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .stat-card.runs .stat-icon { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .stat-card.unique .stat-icon { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            line-height: 1;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            color: var(--gray-600);
+        }
+
+        /* Table Section */
+        .table-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            border-bottom: 2px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .table-title i { color: var(--primary); }
+
+        .table-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            transform: translateY(-1px);
+        }
+
+        /* Table */
+        .table-container { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead { background: var(--gray-50); }
+
+        th {
+            padding: 1rem 2rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        td {
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.875rem;
+            vertical-align: middle;
+        }
+
+        tr:hover { background: var(--gray-50); }
+
+        .rule-name {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-family: 'Courier New', monospace;
+        }
+
+        .badge {
+            padding: 0.375rem 0.875rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .badge-critical { background: rgba(220, 38, 38, 0.1); color: var(--critical); }
+        .badge-critical::before { background: var(--critical); }
+
+        .badge-high { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .badge-high::before { background: var(--danger); }
+
+        .badge-medium { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+        .badge-medium::before { background: #d97706; }
+
+        .badge-low { background: rgba(59, 130, 246, 0.1); color: var(--primary); }
+        .badge-low::before { background: var(--primary); }
+
+        .badge-new { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .badge-new::before {
+            background: var(--success);
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .badge-existing { background: var(--gray-100); color: var(--gray-600); }
+
+        .ip-address {
+            font-family: 'Courier New', monospace;
+            background: var(--gray-100);
+            padding: 0.25rem 0.625rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .timestamp { color: var(--gray-600); font-size: 0.8rem; }
+
+        .no-data {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-600);
+        }
+
+        .no-data i {
+            font-size: 4rem;
+            color: var(--gray-300);
+            margin-bottom: 1rem;
+        }
+
+        .no-data h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 2rem;
+            padding: 1.5rem 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .footer-info { display: flex; align-items: center; gap: 2rem; }
+        .footer-item { display: flex; align-items: center; gap: 0.5rem; }
+        .footer-item i { color: var(--success); }
+
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; gap: 1rem; padding: 1rem; }
+            .container { padding: 1rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .table-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+            .table-actions { width: 100%; }
+            .btn { flex: 1; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>Панель мониторинга SOC</h1>
+                    <p>Центр операционной безопасности</p>
+                </div>
+            </div>
+
+            <div class="user-menu">
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i>
+                    <span>Защищенное соединение</span>
+                </div>
+
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ user.full_name[0].upper() }}
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">{{ user.full_name }}</div>
+                        <div class="user-role">Аналитик безопасности</div>
+                    </div>
+                </div>
+
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Выйти</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="stats-grid">
+            <div class="stat-card total">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-label">Всего алертов</div>
+                        <div class="stat-value" id="stat-total">{{ stats.total_alerts }}</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="stat-change">Мониторинг активен</div>
+            </div>
+
+            <div class="stat-card new">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-label">Новые алерты</div>
+                        <div class="stat-value" id="stat-new">{{ stats.new_alerts }}</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                </div>
+                <div class="stat-change">Требуют внимания</div>
+            </div>
+
+            <div class="stat-card runs">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-label">Всего проверок</div>
+                        <div class="stat-value" id="stat-runs">{{ stats.total_runs }}</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                </div>
+                <div class="stat-change">Циклы детекции</div>
+            </div>
+
+            <div class="stat-card unique">
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-label">Уникальные угрозы</div>
+                        <div class="stat-value" id="stat-unique">{{ stats.unique_alerts }}</div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                </div>
+                <div class="stat-change">Выявленные паттерны</div>
+            </div>
+        </div>
+
+        <div class="table-section">
+            <div class="table-header">
+                <h3 class="table-title">
+                    <i class="fas fa-table"></i>
+                    Таблица инцидентов
+                </h3>
+                <div class="table-actions">
+                    <button class="btn btn-secondary" id="btn-refresh">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Обновить</span>
+                    </button>
+                    <button class="btn btn-primary" id="btn-export">
+                        <i class="fas fa-download"></i>
+                        <span>Экспорт CSV</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Правило детекции</th>
+                            <th>Уровень риска</th>
+                            <th>IP-источник</th>
+                            <th>Попытки</th>
+                            <th>Статус</th>
+                            <th>MITRE ATT&CK</th>
+                            <th>Время обнаружения</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alerts-table-body">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-info">
+                <div class="footer-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Система работает</span>
+                </div>
+                <div class="footer-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="last-update">Последнее обновление: только что</span>
+                </div>
+            </div>
+            <div>
+                <i class="fas fa-redo-alt"></i> Автообновление каждые 30 секунд
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let alertsData = [];
+        let refreshInterval;
+
+        async function loadAlerts() {
+            try {
+                const response = await fetch('/api/alerts');
+                if (!response.ok) throw new Error('Ошибка загрузки алертов');
+
+                const data = await response.json();
+                alertsData = data.alerts;
+
+                renderTable(alertsData);
+                updateLastUpdateTime();
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                if (!response.ok) throw new Error('Ошибка загрузки статистики');
+
+                const stats = await response.json();
+
+                animateValue('stat-total', stats.total_alerts);
+                animateValue('stat-new', stats.new_alerts);
+                animateValue('stat-runs', stats.total_runs);
+                animateValue('stat-unique', stats.unique_alerts);
+
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+        }
+
+        function renderTable(alerts) {
+            const tbody = document.getElementById('alerts-table-body');
+
+            if (alerts.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="no-data">
+                            <i class="fas fa-shield-alt"></i>
+                            <h3>Инциденты отсутствуют</h3>
+                            <p>Системы работают штатно. Угроз не обнаружено.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = alerts.map(alert => `
+                <tr>
+                    <td class="rule-name">${escapeHtml(alert.rule)}</td>
+                    <td>
+                        <span class="badge badge-${alert.severity.toLowerCase()}">
+                            ${alert.severity}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="ip-address">${escapeHtml(alert.indicator)}</span>
+                    </td>
+                    <td><strong>${alert.count}</strong></td>
+                    <td>
+                        ${alert.is_new
+                            ? '<span class="badge badge-new"><i class="fas fa-circle" style="font-size: 6px;"></i> Новый</span>'
+                            : '<span class="badge badge-existing">Существующий</span>'
+                        }
+                    </td>
+                    <td><code style="background: var(--gray-100); padding: 0.25rem 0.5rem; border-radius: 4px; font-family: monospace;">${alert.technique || 'Не указано'}</code></td>
+                    <td class="timestamp">${formatDate(alert.timestamp)}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function exportToCSV() {
+            try {
+                const btn = document.getElementById('btn-export');
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Экспорт...';
+                btn.disabled = true;
+
+                const response = await fetch('/api/alerts');
+                const data = await response.json();
+
+                if (data.alerts.length === 0) {
+                    alert('Нет данных для экспорта');
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                    return;
+                }
+
+                let csv = 'Правило,Риск,IP-источник,Попытки,Статус,MITRE ATT&CK,Время\n';
+                data.alerts.forEach(alert => {
+                    csv += `${alert.rule},${alert.severity},${alert.indicator},${alert.count},${alert.is_new ? 'Новый' : 'Существующий'},${alert.technique || ''},${alert.timestamp}\n`;
+                });
+
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                const timestamp = new Date().toISOString().split('T')[0];
+
+                link.setAttribute('href', url);
+                link.setAttribute('download', `soc_alerts_${timestamp}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+
+            } catch (error) {
+                console.error('Ошибка экспорта:', error);
+                alert('Ошибка при экспорте данных.');
+            }
+        }
+
+        function animateValue(id, newValue) {
+            const element = document.getElementById(id);
+            const currentValue = parseInt(element.textContent) || 0;
+            if (currentValue !== newValue) {
+                element.style.transform = 'scale(1.2)';
+                element.style.transition = 'transform 0.3s';
+                setTimeout(() => {
+                    element.textContent = newValue;
+                    element.style.transform = 'scale(1)';
+                }, 150);
+            } else {
+                element.textContent = newValue;
+            }
+        }
+
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString('ru-RU', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('last-update').textContent = `Последнее обновление: ${timeString}`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.getElementById('btn-refresh').addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            icon.classList.add('fa-spin');
+
+            Promise.all([loadAlerts(), loadStats()]).then(() => {
+                setTimeout(() => {
+                    icon.classList.remove('fa-spin');
+                }, 500);
+            });
+        });
+
+        document.getElementById('btn-export').addEventListener('click', exportToCSV);
+
+        function startAutoRefresh() {
+            refreshInterval = setInterval(() => {
+                loadAlerts();
+                loadStats();
+            }, 30000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAlerts();
+            loadStats();
+            startAutoRefresh();
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

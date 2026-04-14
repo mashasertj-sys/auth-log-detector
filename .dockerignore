@@ -1,0 +1,21 @@
+# dockerignore
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+ENV/
+.git/
+.gitignore
+*.log
+*.sqlite3
+*.db
+reports/
+data/
+logs/
+.DS_Store
+ngrok
+ngrok.zip

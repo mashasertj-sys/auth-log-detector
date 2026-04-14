@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Alerts Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #1e1e1e; color: #fff; }
+        h1 { color: #4CAF50; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #444; padding: 12px; text-align: left; }
+        th { background-color: #333; color: #4CAF50; }
+        tr:nth-child(even) { background-color: #2a2a2a; }
+        tr:hover { background-color: #3a3a3a; }
+        .new { color: #4CAF50; font-weight: bold; }
+        .existing { color: #888; }
+        .high { color: #f44336; font-weight: bold; }
+        .medium { color: #ff9800; }
+        .low { color: #2196F3; }
+        .stats { background-color: #333; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1> Security Alerts Report</h1>
+    <div class="stats">
+        <strong>Generated:</strong> 2026-04-08T20:42:19.657914+00:00<br>
+        <strong>Total Alerts:</strong> 4 (4 new, 0 existing)
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Rule</th>
+                <th>Severity</th>
+                <th>IP</th>
+                <th>Count</th>
+                <th>Status</th>
+                <th>Technique</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>ssh_bruteforce</td>
+                <td class="high">HIGH</td>
+                <td>192.168.1.100</td>
+                <td>3</td>
+                <td class="new">NEW</td>
+                <td>T1110.001</td>
+            </tr>
+            <tr>
+                <td>sensitive_file_access</td>
+                <td class="low">CRITICAL</td>
+                <td>shadow</td>
+                <td>1</td>
+                <td class="new">NEW</td>
+                <td>T1003.008</td>
+            </tr>
+            <tr>
+                <td>sensitive_file_access</td>
+                <td class="low">CRITICAL</td>
+                <td>passwd</td>
+                <td>1</td>
+                <td class="new">NEW</td>
+                <td>T1003.008</td>
+            </tr>
+            <tr>
+                <td>cron_modification</td>
+                <td class="high">HIGH</td>
+                <td>system_event</td>
+                <td>1</td>
+                <td class="new">NEW</td>
+                <td>T1053.003</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

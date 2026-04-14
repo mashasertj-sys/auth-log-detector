@@ -1,0 +1,5 @@
+Rule,Severity,IP,Count,Status,Technique,Timestamp,Alert_ID
+ssh_bruteforce,HIGH,192.168.1.100,3,NEW,T1110.001,2026-04-08T20:42:19.259107+00:00,23a1a5f2
+sensitive_file_access,CRITICAL,shadow,1,NEW,T1003.008,2026-04-08T20:42:19.259402+00:00,eee790a8
+sensitive_file_access,CRITICAL,passwd,1,NEW,T1003.008,2026-04-08T20:42:19.259410+00:00,0f0b25aa
+cron_modification,HIGH,system_event,1,NEW,T1053.003,2026-04-08T20:42:19.259459+00:00,c320a396

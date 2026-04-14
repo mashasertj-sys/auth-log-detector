@@ -1,0 +1,49 @@
+# docker-compose.yml
+services:
+  web:
+    build: .
+    container_name: soc-web
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./data:/app/data          # ← Исправлено: двоеточие между хостом и контейнером
+      - ./reports:/app/reports
+      - ./logs:/app/logs
+      - ./security_alerts.db:/app/security_alerts.db  # ← Добавлено: явное монтирование БД
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  simulator:
+    build: .
+    container_name: soc-simulator
+    command: python simulator_service.py
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./activity.log:/app/activity.log  # ← Монтируем лог симулятора
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+
+  monitor:
+    build: .
+    container_name: soc-monitor
+    command: python monitor_daemon.py
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+      - ./logs:/app/logs
+      - ./security_alerts.db:/app/security_alerts.db
+      - ./activity.log:/app/activity.log
+    depends_on:
+      - web
+      - simulator
+    restart: unless-stopped

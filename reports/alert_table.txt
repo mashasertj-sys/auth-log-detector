@@ -1,0 +1,15 @@
+====================================================================================================
+SECURITY ALERTS REPORT
+Generated: 2026-04-08T20:42:19.656904+00:00
+Total: 4 alerts (4 new, 0 existing)
+====================================================================================================
+
+Rule                 | Severity   | IP               | Count  | Status       | Technique
+----------------------------------------------------------------------------------------------------
+ssh_bruteforce       | HIGH       | 192.168.1.100    | 3      | [NEW]        | T1110.001
+sensitive_file_access | CRITICAL   | shadow           | 1      | [NEW]        | T1003.008
+sensitive_file_access | CRITICAL   | passwd           | 1      | [NEW]        | T1003.008
+cron_modification    | HIGH       | system_event     | 1      | [NEW]        | T1053.003
+
+===================================================================================================
+[INFO] Report saved to reports/alert_table.txt

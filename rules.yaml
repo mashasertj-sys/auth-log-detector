@@ -1,0 +1,27 @@
+- name: ssh_bruteforce
+  pattern: "Failed password for .* from ([0-9.]+)"
+  threshold: 3
+  severity: HIGH
+  technique: T1110.001
+  description: "Multiple failed SSH logins from same IP"
+
+- name: sudo_abuse
+  pattern: "sudo:.*COMMAND=(.+)"
+  threshold: 3
+  severity: MEDIUM
+  technique: T1548.003
+  description: "Frequent sudo command execution"
+
+- name: sensitive_file_access
+  pattern: "cat /etc/(shadow|passwd)"
+  threshold: 1
+  severity: CRITICAL
+  technique: T1003.008
+  description: "Access to sensitive system files"
+
+- name: cron_modification
+  pattern: "cron.*EDIT|crontab.*modified"
+  threshold: 1
+  severity: HIGH
+  technique: T1053.003
+  description: "Cron job modification detected"
