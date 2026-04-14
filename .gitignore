@@ -46,3 +46,4 @@ reports/
 ngrok
 ngrok.zip
 EOFsecurity_alerts.db
+.env
