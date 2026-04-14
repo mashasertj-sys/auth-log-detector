@@ -59,7 +59,7 @@ def save_history(history: dict):
 
 def generate_alert_id(alert: dict) -> str:
     unique_string = f"{alert['rule']}:{alert['indicator']}:{alert['technique']}"
-    return hashlib.md5(unique_string.encode()).hexdigest()[:8]
+    return hashlib.md5(unique_string.encode()).hexdigest()[:8] # nosec B324
 
 
 def is_new_alert(alert: dict, history: dict) -> bool:

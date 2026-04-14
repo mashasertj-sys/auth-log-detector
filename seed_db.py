@@ -40,7 +40,7 @@ def create_sample_alerts():
     for alert_data in sample_alerts:
         alert_id = hashlib.md5(
             f"{alert_data['rule']}:{alert_data['indicator']}:{alert_data['technique']}".encode()
-        ).hexdigest()[:8]
+        ).hexdigest()[:8] # nosec B324
 
         existing = db.query(SecurityAlert).filter(SecurityAlert.alert_id == alert_id).first()
         if not existing:

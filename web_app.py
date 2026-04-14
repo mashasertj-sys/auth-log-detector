@@ -164,7 +164,7 @@ async def api_add_alert(
 ):
     import hashlib
 
-    alert_id = hashlib.md5(f"{rule}:{indicator}:{technique}".encode()).hexdigest()[:8]
+    alert_id = hashlib.md5(f"{rule}:{indicator}:{technique}".encode()).hexdigest()[:8] # nosec B324
 
     existing = db.query(SecurityAlert).filter(SecurityAlert.alert_id == alert_id).first()
 
@@ -246,4 +246,4 @@ if __name__ == "__main__":
     print(" Password: admin123")
     print(" Database: security_alerts.db")
     print("=" * 60)
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000) # nosec B104

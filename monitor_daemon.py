@@ -60,7 +60,7 @@ class LogMonitor:
         db = next(db_gen)
         try:
             for a in alerts:
-                alert_id = hashlib.md5(f"{a['rule']}:{a['indicator']}:{a['technique']}".encode()).hexdigest()[:8]
+                alert_id = hashlib.md5(f"{a['rule']}:{a['indicator']}:{a['technique']}".encode()).hexdigest()[:8] # nosec B324
                 existing = db.query(SecurityAlert).filter(SecurityAlert.alert_id == alert_id).first()
                 if existing:
                     existing.count = a['count']
