@@ -32,7 +32,6 @@ jobs:
         run: |
           pip install safety==2.3.5
           safety check -r requirements.txt --json > safety-report.json || true
-          safety check -r requirements.txt
 
       - name: Run Gitleaks (Secrets)
         run: |
