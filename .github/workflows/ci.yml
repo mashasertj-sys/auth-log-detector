@@ -30,8 +30,8 @@ jobs:
 
       - name: Run Safety (SCA)
         run: |
-          pip install safety
-          run: pip install safety==2.3.5
+          pip install safety==2.3.5
+          safety check -r requirements.txt
 
       - name: Run Gitleaks (Secrets)
         run: |
